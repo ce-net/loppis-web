@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>loppis — secondhand on the mesh</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { max-width: 860px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+    h1 { letter-spacing: -0.02em; }
+    #status { color: gray; min-height: 1.5em; }
+    main { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+    @media (max-width: 700px) { main { grid-template-columns: 1fr; } }
+    ul { list-style: none; padding: 0; }
+    .listing { border: 1px solid color-mix(in srgb, currentColor 20%, transparent); border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.8rem; }
+    .listing.closed { opacity: 0.5; }
+    .listing .desc, .listing .high { display: block; font-size: 0.9em; }
+    .listing form { margin-top: 0.5rem; display: flex; gap: 0.5rem; }
+    input, button { font: inherit; padding: 0.3rem 0.6rem; }
+    #feed li { font-size: 0.85em; border-left: 3px solid color-mix(in srgb, currentColor 30%, transparent); padding-left: 0.6rem; margin-bottom: 0.4rem; }
+    form#create { display: grid; gap: 0.5rem; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>loppis</h1>
+  <p id="status"></p>
+  <form id="create">
+    <input name="title" placeholder="What are you selling?" required />
+    <input name="description" placeholder="Description (optional)" />
+    <input name="startPrice" type="number" placeholder="Starting price (kr)" required />
+    <button>List it</button>
+  </form>
+  <main>
+    <section><h2>Listings</h2><ul id="listings"></ul></section>
+    <aside><h2>Live feed</h2><ul id="feed"></ul></aside>
+  </main>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[app]
+name = "loppis-web"
+version = "0.1.0"
+summary = "loppis marketplace web frontend (typed mesh consumer; publish via ce-publish as a static bundle)"
+runtime = "script"
+
+[script]
+interpreter = "node"
+entry = "dev-server.mjs"
