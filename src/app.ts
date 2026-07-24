@@ -6,8 +6,7 @@
  */
 
 import { CeClient } from "@ce-net/sdk";
-// @ts-expect-error self-contained viz cell (recursive-frontend v1, no types)
-import "@loppis/viz"; // registers <ce-viz-loppis>
+import "@loppis/viz"; // registers <ce-viz-loppis> (self-contained viz cell)
 import { connect, CallError, type Client } from "@ce-net/iface";
 import { ListingsIface, type Listing } from "@loppis/listings/iface";
 import { BidsIface, type Bid } from "@loppis/bids/iface";
