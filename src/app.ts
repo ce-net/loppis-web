@@ -6,6 +6,7 @@
  */
 
 import { CeClient } from "@ce-net/sdk";
+import "@ce-net/viz"; // registers <ce-mesh-viz>
 import { connect, CallError, type Client } from "@ce-net/iface";
 import { ListingsIface, type Listing } from "@loppis/listings/iface";
 import { BidsIface, type Bid } from "@loppis/bids/iface";

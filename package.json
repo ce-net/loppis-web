@@ -4,7 +4,10 @@
   "description": "loppis marketplace frontend ce app: a browser page that is a typed mesh consumer of loppis.listings/1 + loppis.bids/1 with a live typed event feed.",
   "license": "MIT",
   "type": "module",
-  "repository": { "type": "git", "url": "git+https://github.com/ce-net/loppis-web.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ce-net/loppis-web.git"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit && esbuild src/app.ts --bundle --format=esm --outfile=dist/app.js",
     "dev": "npm run build && node dev-server.mjs"
@@ -13,7 +16,11 @@
     "@ce-net/iface": "github:ce-net/ce-iface",
     "@ce-net/sdk": "github:ce-net/ce-ts",
     "@loppis/bids": "github:ce-net/loppis-bids",
-    "@loppis/listings": "github:ce-net/loppis-listings"
+    "@loppis/listings": "github:ce-net/loppis-listings",
+    "@ce-net/viz": "github:ce-net/ce-viz"
   },
-  "devDependencies": { "esbuild": "^0.24.0", "typescript": "^5.6.0" }
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
 }
