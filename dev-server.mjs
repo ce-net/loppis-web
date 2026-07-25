@@ -7,12 +7,40 @@
 
 import { createServer, request as httpRequest } from "node:http";
 import { readFile } from "node:fs/promises";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 const PORT = Number(process.env.PORT ?? 5173);
 const NODE = process.env.CE_API ?? "http://127.0.0.1:8844";
+
+// State (the pid-lock) lives OUTSIDE the install dir: `ce app install` replaces the whole
+// versioned app dir on every deploy, so a lock kept in it would be wiped by upgrades.
+const STATE_DIR = process.env.LOPPIS_STATE ?? join(homedir(), ".local", "share", "loppis-web");
+
+/**
+ * Singleton guard — the same law the loppis backends carry. Supervisors respawn this app
+ * (and a node restart orphans the previous generation, which keeps the port), so without a
+ * lock every respawn died on EADDRINUSE and dumped a 40-line stack trace into daemon.log —
+ * megabytes of noise hiding real failures. First one wins; the rest exit quietly.
+ */
+function singleton(dirPath) {
+  const lock = join(dirPath, "daemon.pid");
+  try {
+    const other = Number(readFileSync(lock, "utf8"));
+    if (other > 0) {
+      try {
+        process.kill(other, 0);
+        console.log(`another instance (pid ${other}) is live — exiting`);
+        process.exit(0);
+      } catch { /* stale lock */ }
+    }
+  } catch { /* no lock */ }
+  mkdirSync(dirPath, { recursive: true });
+  writeFileSync(lock, String(process.pid));
+}
+
+singleton(STATE_DIR);
 
 function token() {
   const candidates = [
@@ -34,7 +62,7 @@ const files = {
   "/app.js": ["dist/app.js", "text/javascript"],
 };
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", `http://localhost:${PORT}`);
   if (url.pathname.startsWith("/api/")) {
     const target = new URL(NODE);
@@ -72,4 +100,16 @@ createServer(async (req, res) => {
     res.writeHead(500);
     res.end(String(e));
   }
-}).listen(PORT, () => console.log(`loppis-web dev server: http://localhost:${PORT} (node: ${NODE})`));
+});
+
+server.on("error", (e) => {
+  // A stale lock plus a live port holder must not become an unhandled 'error' stack dump.
+  if (e && e.code === "EADDRINUSE") {
+    console.log(`port ${PORT} already served by another instance — exiting`);
+    process.exit(0);
+  }
+  console.error(`loppis-web dev server failed: ${String(e)}`);
+  process.exit(1);
+});
+
+server.listen(PORT, () => console.log(`loppis-web dev server: http://localhost:${PORT} (node: ${NODE})`));
